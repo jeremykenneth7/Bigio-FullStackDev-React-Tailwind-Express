@@ -17,13 +17,21 @@ You may list what feature you created, example :
 - Add Story
 - Story Detail
 - Edit Story
+- Edit Chapter
+- Filter List
+- Search Data
+- Delete Story
+- Delete Chapter
 
 
 ## <a name="libraries"></a> Libraries :
 You may list what libraries you used in this project, example :
 - ExpressJS
 - ReactJS
-- etc
+- Tailwind
+- Firebase
+- Cloud Functions
+- Vercel
 
 ## <a name="project-structures"></a> Project Structure :
 * `assets`
