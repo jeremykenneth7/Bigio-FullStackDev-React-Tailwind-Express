@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const StoryTable = ({ stories, handleEdit, handleDelete }) => {
-    const dummyRows = Array.from({ length: 6 }, (_, rowIndex) => ({
+    const dummyRows = Array.from({ length: 10 }, (_, rowIndex) => ({
         id: `dummy-${rowIndex}`,
         index: rowIndex,
     }));
@@ -54,12 +55,11 @@ const StoryTable = ({ stories, handleEdit, handleDelete }) => {
                             <td className="py-4 px-4 border border-slate-600 text-center">
                                 {stories.length > 0 && stories[dummyRow.index] ? (
                                     <>
-                                        <button
-                                            className="mr-2 text-blue-500 hover:text-blue-700 "
-                                            onClick={() => handleEdit(stories[dummyRow.index]?.id)}
-                                        >
-                                            <FontAwesomeIcon icon={faEdit} />
-                                        </button>
+                                        <Link to={`/editstory/${stories[dummyRow.index]?.id}`}>
+                                            <button className="mr-2 text-blue-500 hover:text-blue-700">
+                                                <FontAwesomeIcon icon={faEdit} />
+                                            </button>
+                                        </Link>
                                         <button
                                             className="text-black-500 "
                                             onClick={() => handleDelete(stories[dummyRow.index]?.id)}

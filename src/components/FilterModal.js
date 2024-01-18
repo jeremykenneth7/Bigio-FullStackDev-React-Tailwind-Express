@@ -18,11 +18,6 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters, selectedFilters}) => {
         setSelectedStatus(selectedFilters.status.length > 0 ? selectedFilters.status[0] : 'Publish');
     };
 
-    const applyFilters = () => {
-        console.log('Applying filters:', selectedFilters);
-        onApplyFilters(); 
-    };
-
     useEffect(() => {
         console.log('selectedFilters:', selectedFilters);
         console.log('selectedCategory:', selectedCategory);

@@ -5,13 +5,14 @@ import ListTable from './ListTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import FilterModal from './FilterModal';
+import { Link } from 'react-router-dom';
 
 const StoryList = () => {
     const [stories, setStories] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [isFilterModalOpen, setFilterModalOpen] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState({
-        categories: [], 
+        categories: [],
         status: [],
     });
 
@@ -21,7 +22,6 @@ const StoryList = () => {
 
     const fetchData = async () => {
         try {
-            // Construct the API endpoint with selected filters
             const apiEndpoint = `https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories?${selectedFilters.categories.length > 0 ? `category=${selectedFilters.categories.join(',')}` : ''}&${selectedFilters.status.length > 0 ? `status=${selectedFilters.status.join(',')}` : ''}`;
 
             const response = await fetch(apiEndpoint);
@@ -126,8 +126,10 @@ const StoryList = () => {
                         className="text-gray-500 cursor-pointer rounded-full p-2 bg-white"
                         onClick={openFilterModal}
                     />
-                    <button class="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md w-32">
-                        Add Story
+                    <button className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md w-32">
+                        <Link to="/story" className="flex items-center justify-center">
+                            Add Story
+                        </Link>
                     </button>
                 </div>
             </div>
