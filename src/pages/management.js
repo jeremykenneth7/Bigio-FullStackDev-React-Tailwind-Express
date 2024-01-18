@@ -1,7 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import EditStory from '../components/editstory';
 
 const Management = () => (
     <div className="flex flex-col min-h-screen">
@@ -9,7 +8,6 @@ const Management = () => (
         <div className="flex flex-1">
             <Sidebar />
             <div className="flex-1">
-                <EditStory />
             </div>
         </div>
     </div>

@@ -117,13 +117,31 @@ const EditStory = () => {
     }, [storyId]);
 
 
-    const handleEditChapter = (chapterId) => {
-        console.log(`Editing chapter with ID: ${chapterId}`);
+    const handleEditChapter = (id) => {
+        console.log(`Editing chapter with ID: ${id}`);
     };
 
-    const handleDeleteChapter = (chapterId) => {
-        console.log(`Deleting chapter with ID: ${chapterId}`);
+    const handleDeleteChapter = async (chapterId) => {
+        try {
+            const response = await fetch(
+                `https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories/${storyId}/chapters/${chapterId}`,
+                {
+                    method: 'DELETE',
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Failed to delete chapter. Status: ${response.status}`);
+            }
+
+            setChapters((prevChapters) => prevChapters.filter((chapter) => chapter.chapterId !== chapterId));
+
+            console.log(`Chapter with ID ${chapterId} deleted successfully`);
+        } catch (error) {
+            console.error('Error deleting chapter:', error.message);
+        }
     };
+
 
     useEffect(() => {
         console.log('Story ID:', storyId);
@@ -225,18 +243,18 @@ const EditStory = () => {
                             <tbody>
                                 {chapters.map((chapter) => (
                                     <tr key={chapter.chapterId}>
-                                        <td className="py-2 px-4 border border-slate-600">{chapter.chapterTitle}</td>
-                                        <td className="py-2 px-4 border border-slate-600">{getCurrentDate()}</td>
-                                        <td className="py-2 px-4 border border-slate-600">
+                                        <td className="py-2 px-4 border border-slate-600 text-center">{chapter.chapterTitle}</td>
+                                        <td className="py-2 px-4 border border-slate-600 text-center">{getCurrentDate()}</td>
+                                        <td className="py-2 px-4 border border-slate-600 text-center">
                                             <button
                                                 className="mr-2 text-blue-500 hover:text-blue-700"
-                                                onClick={() => handleEditChapter(chapter.chapterId)}
+                                                onClick={() => handleEditChapter(chapter.id)}
                                             >
                                                 <FontAwesomeIcon icon={faEdit} />
                                             </button>
                                             <button
                                                 className="text-black-500"
-                                                onClick={() => handleDeleteChapter(chapter.chapterId)}
+                                                onClick={() => handleDeleteChapter(chapter.id)}
                                             >
                                                 <FontAwesomeIcon icon={faTrash} />
                                             </button>
