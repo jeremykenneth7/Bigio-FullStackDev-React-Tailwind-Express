@@ -106,13 +106,11 @@ const StoryList = () => {
             </div>
             <FetchStory setStories={setStories} />
             <ListTable stories={filteredStories} handleEdit={handleEdit} handleDelete={handleDelete} />
-            {isFilterModalOpen && (
-                <FilterModal
-                    isOpen={isFilterModalOpen}
-                    onClose={() => setIsFilterModalOpen(false)}
-                    onApplyFilter={handleApplyFilter}
-                />
-            )}
+            <FilterModal
+                isOpen={isFilterModalOpen}
+                onClose={() => setIsFilterModalOpen(false)}
+                onApplyFilter={handleApplyFilter}
+            />
         </div>
     );
 };
