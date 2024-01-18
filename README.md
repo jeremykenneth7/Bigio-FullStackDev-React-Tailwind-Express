@@ -34,9 +34,7 @@ You may list what libraries you used in this project, example :
 - Vercel
 
 ## <a name="project-structures"></a> Project Structure :
-* `assets`
 * `components`
-* `utils`
 * `pages`
 * `services`
 
