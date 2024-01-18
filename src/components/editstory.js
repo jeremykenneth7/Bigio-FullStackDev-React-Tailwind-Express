@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { IoChevronBack } from "react-icons/io5";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import CancelModal from './CancelModal';
+import * as apiUtils from '../utils/apiUtils'; 
 
 const EditStory = () => {
+    const navigate = useNavigate();
     const { storyId } = useParams();
     const [storyData, setStoryData] = useState({
         title: '',
@@ -19,16 +22,8 @@ const EditStory = () => {
     useEffect(() => {
         const fetchStoryData = async () => {
             try {
-                const response = await fetch(
-                    `https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories/${storyId}`
-                );
-
-                if (response.ok) {
-                    const fetchedStoryData = await response.json();
-                    setStoryData(fetchedStoryData);
-                } else {
-                    console.error('Failed to fetch story data');
-                }
+                const fetchedStoryData = await apiUtils.getStoryById(storyId);
+                setStoryData(fetchedStoryData);
             } catch (error) {
                 console.error('Error fetching story data:', error);
             }
@@ -41,7 +36,7 @@ const EditStory = () => {
         const { name, value, type } = e.target;
         setStoryData({
             ...storyData,
-            [name]: type === 'file' ? e.target.files[0] : value 
+            [name]: type === 'file' ? e.target.files[0] : value,
         });
     };
 
@@ -49,7 +44,7 @@ const EditStory = () => {
         const { value } = e.target;
         setStoryData({
             ...storyData,
-            tags: value.split(',').map(tag => tag.trim())
+            tags: value.split(',').map(tag => tag.trim()),
         });
     };
 
@@ -57,7 +52,7 @@ const EditStory = () => {
         const { value } = e.target;
         setStoryData({
             ...storyData,
-            category: value
+            category: value,
         });
     };
 
@@ -65,7 +60,7 @@ const EditStory = () => {
         const { value } = e.target;
         setStoryData({
             ...storyData,
-            status: value
+            status: value,
         });
     };
 
@@ -73,22 +68,8 @@ const EditStory = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch(
-                `https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories/${storyId}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(storyData),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`Failed to update story. Status: ${response.status}`);
-            }
-
-            console.log('Story updated successfully');
+            await apiUtils.updateStory(storyId, storyData);
+            navigate('/');
         } catch (error) {
             console.error('Error updating story:', error.message);
         }
@@ -152,6 +133,21 @@ const EditStory = () => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         const formattedDate = currentDate.toLocaleDateString('en-US', options);
         return formattedDate;
+    };
+
+    const [showCancelModal, setShowCancelModal] = useState(false);
+
+    const handleCancelClick = () => {
+        setShowCancelModal(true);
+    };
+
+    const handleCancelConfirmation = () => {
+        setShowCancelModal(false);
+        navigate('/');
+    };
+
+    const handleCancelModalClose = () => {
+        setShowCancelModal(false);
     };
 
     return (
@@ -226,7 +222,7 @@ const EditStory = () => {
                     }} />
                     <div className='flex justify-end mt-10 mb-10'>
                         <button type="cancel" className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md">
-                            <Link to="/" className="flex items-center justify-center">
+                            <Link to="/addchapter" className="flex items-center justify-center">
                                 Add Chapter
                             </Link>
                         </button>
@@ -267,16 +263,20 @@ const EditStory = () => {
                 </div>
                 <div className='flex justify-end gap-8'>
                     <button type="cancel" className="bg-white text-[#6558F5] font-bold py-2 px-4 rounded-md">
-                        <Link to="/" className="flex items-center justify-center">
+                        <button type="button" onClick={handleCancelClick} className="bg-white text-[#6558F5] font-bold py-2 px-4 rounded-md">
                             Cancel
-                        </Link>
+                        </button>
                     </button>
                     <button type="submit" className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md">
                         Save
                     </button>
                 </div>
-
             </form>
+            <CancelModal
+                isOpen={showCancelModal}
+                onCancel={handleCancelModalClose}
+                onConfirm={handleCancelConfirmation}
+            />
         </div>
     );
 };

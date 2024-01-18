@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { IoChevronBack } from "react-icons/io5";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import CancelModal from './CancelModal';
+import * as apiUtils from '../utils/apiUtils'; 
 
 const AddStory = () => {
+    const navigate = useNavigate();
     const [storyData, setStoryData] = useState({
         title: "",
         author: "",
@@ -19,7 +22,7 @@ const AddStory = () => {
         const { name, value, type } = e.target;
         setStoryData({
             ...storyData,
-            [name]: type === 'file' ? e.target.files[0] : value  // Use the file from the input
+            [name]: type === 'file' ? e.target.files[0] : value
         });
     };
 
@@ -51,46 +54,28 @@ const AddStory = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(storyData),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to add story');
-            }
-            console.log('Story added successfully');
+            await apiUtils.addStory(storyData);
+            navigate('/');
         } catch (error) {
             console.error('Error adding story:', error.message);
         }
     };
 
-
     const { storyId } = useParams();
     const [chapters, setChapters] = useState([]);
 
     useEffect(() => {
-        const fetchChapters = async () => {
-            try {
-                const response = await fetch(`https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories/${storyId}/chapters`);
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch chapters');
-                }
-
-                const data = await response.json();
-                setChapters(data);
-            } catch (error) {
-                console.error('Error fetching chapters:', error.message);
-            }
-        };
-
         fetchChapters();
     }, [storyId]);
 
+    const fetchChapters = async () => {
+        try {
+            const data = await apiUtils.getChaptersByStoryId(storyId);
+            setChapters(data);
+        } catch (error) {
+            console.error('Error fetching chapters:', error.message);
+        }
+    };
 
     const handleEditChapter = (chapterId) => {
         console.log(`Editing chapter with ID: ${chapterId}`);
@@ -98,6 +83,21 @@ const AddStory = () => {
 
     const handleDeleteChapter = (chapterId) => {
         console.log(`Deleting chapter with ID: ${chapterId}`);
+    };
+
+    const [showCancelModal, setShowCancelModal] = useState(false);
+
+    const handleCancelClick = () => {
+        setShowCancelModal(true);
+    };
+
+    const handleCancelConfirmation = () => {
+        setShowCancelModal(false);
+        navigate('/');
+    };
+
+    const handleCancelModalClose = () => {
+        setShowCancelModal(false);
     };
 
     return (
@@ -172,9 +172,12 @@ const AddStory = () => {
                     }} />
                     <div className='flex justify-end mt-10 mb-10'>
                         <button type="cancel" className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md">
-                            <Link to="/" className="flex items-center justify-center">
+                            <button
+                                className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md"
+                                onClick={() => navigate("/addchapter")}
+                            >
                                 Add Chapter
-                            </Link>
+                            </button>
                         </button>
                     </div>
                     <div>
@@ -189,9 +192,13 @@ const AddStory = () => {
                             <tbody>
                                 {chapters.map((chapter) => (
                                     <tr key={chapter.chapterId}>
-                                        <td className="py-2 px-4 border border-slate-600">{chapter.chapterTitle}</td>
-                                        <td className="py-2 px-4 border border-slate-600">{chapter.lastUpdated}</td>
-                                        <td className="py-2 px-4 border border-slate-600">
+                                        <td className="py-2 px-4 border border-slate-600 text-center">{chapter.chapterTitle}</td>
+                                        <td className="py-2 px-4 border border-slate-600 text-center">
+                                            {chapter.lastUpdated && chapter.lastUpdated.toDate && typeof chapter.lastUpdated.toDate === 'function'
+                                                ? chapter.lastUpdated.toDate().toLocaleString()
+                                                : 'N/A'}
+                                        </td>
+                                        <td className="py-2 px-4 border border-slate-600 text-center">
                                             <button
                                                 className="mr-2 text-blue-500 hover:text-blue-700"
                                                 onClick={() => handleEditChapter(chapter.chapterId)}
@@ -213,16 +220,20 @@ const AddStory = () => {
                 </div>
                 <div className='flex justify-end gap-8'>
                     <button type="cancel" className="bg-white text-[#6558F5] font-bold py-2 px-4 rounded-md">
-                        <Link to="/" className="flex items-center justify-center">
+                        <button type="button" onClick={handleCancelClick} className="bg-white text-[#6558F5] font-bold py-2 px-4 rounded-md">
                             Cancel
-                        </Link>
+                        </button>
                     </button>
                     <button type="submit" className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md">
                         Save
                     </button>
                 </div>
-
             </form>
+            <CancelModal
+                isOpen={showCancelModal}
+                onCancel={handleCancelModalClose}
+                onConfirm={handleCancelConfirmation}
+            />
         </div>
     );
 };
