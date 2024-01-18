@@ -55,7 +55,7 @@ const AddStory = () => {
 
         try {
             await apiUtils.addStory(storyData);
-            navigate('/');
+            navigate('/');  
         } catch (error) {
             console.error('Error adding story:', error.message);
         }
@@ -66,6 +66,7 @@ const AddStory = () => {
 
     useEffect(() => {
         fetchChapters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [storyId]);
 
     const fetchChapters = async () => {
@@ -82,8 +83,17 @@ const AddStory = () => {
     };
 
     const handleDeleteChapter = (chapterId) => {
-        console.log(`Deleting chapter with ID: ${chapterId}`);
+        console.log('Deleting chapter with ID:', chapterId);
+        try {
+            apiUtils.deleteChapter(storyId, chapterId);
+            // Fetch updated chapters after deletion
+            fetchChapters();
+        } catch (error) {
+            console.error('Error deleting chapter:', error.message);
+        }
     };
+
+
 
     const [showCancelModal, setShowCancelModal] = useState(false);
 
@@ -105,7 +115,7 @@ const AddStory = () => {
             <ul className="flex flex-col">
                 <li >
                     <Link to="/" className="flex flex-wrap items-center py-2 rounded ">
-                        <IoChevronBack className="text-lg mr-3 text-[#6558F5]" />
+                        <IoChevronBack className="text-lg mr-5 text-[#6558F5]" />
                         <div className='text-lg font-medium text-[#6558F5] rounded underline'>List Story</div>
                     </Link>
                 </li>
@@ -171,14 +181,13 @@ const AddStory = () => {
                         borderColor: '#000000'
                     }} />
                     <div className='flex justify-end mt-10 mb-10'>
-                        <button type="cancel" className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md">
-                            <button
-                                className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md"
-                                onClick={() => navigate("/addchapter")}
-                            >
-                                Add Chapter
-                            </button>
+                        <button
+                            className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md"
+                            onClick={() => navigate("/addchapter")}
+                        >
+                            Add Chapter
                         </button>
+
                     </div>
                     <div>
                         <table className="min-w-full bg-white border border-gray-300">
@@ -214,6 +223,7 @@ const AddStory = () => {
                                         </td>
                                     </tr>
                                 ))}
+
                             </tbody>
                         </table>
                     </div>

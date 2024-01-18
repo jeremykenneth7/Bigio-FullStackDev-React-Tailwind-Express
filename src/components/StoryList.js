@@ -1,57 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import FetchStory from '../services/api/apiService';
 import ListTable from './ListTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
-import FilterModal from './FilterModal';
 import { Link } from 'react-router-dom';
+import FilterModal from './FilterModal';
 
 const StoryList = () => {
     const [stories, setStories] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isFilterModalOpen, setFilterModalOpen] = useState(false);
-    const [selectedFilters, setSelectedFilters] = useState({
-        categories: [],
-        status: [],
-    });
-
-    useEffect(() => {
-        fetchData();
-    }, [selectedFilters]);
-
-    const fetchData = async () => {
-        try {
-            const apiEndpoint = `https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories?${selectedFilters.categories.length > 0 ? `category=${selectedFilters.categories.join(',')}` : ''}&${selectedFilters.status.length > 0 ? `status=${selectedFilters.status.join(',')}` : ''}`;
-
-            const response = await fetch(apiEndpoint);
-
-            if (response.ok) {
-                const fetchedData = await response.json();
-                setStories(fetchedData);
-            } else {
-                console.error('Failed to fetch data');
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-
-    const openFilterModal = () => {
-        setFilterModalOpen(true);
-    };
-
-    const closeFilterModal = () => {
-        setFilterModalOpen(false);
-    };
-
-    const handleApplyFilters = (filters) => {
-        if (filters) {
-            setSelectedFilters(filters);
-        }
-        closeFilterModal();
-    };
-
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
     const handleEdit = async (storyId) => {
         try {
@@ -109,6 +68,18 @@ const StoryList = () => {
             story.author.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const handleApplyFilter = (filterValues) => {
+        const filteredStories = stories.filter((story) => {
+            const matchesCategory = !filterValues.category || story.category === filterValues.category;
+            const matchesStatus = !filterValues.status || story.status === filterValues.status;
+
+            return matchesCategory && matchesStatus;
+        });
+
+        setStories(filteredStories);
+        setIsFilterModalOpen(false);
+    };
+
     return (
         <div className="container mx-auto p-4">
             <div className="flex items-center justify-between mb-10 mt-4 mr-12">
@@ -124,7 +95,7 @@ const StoryList = () => {
                     <FontAwesomeIcon
                         icon={faFilter}
                         className="text-gray-500 cursor-pointer rounded-full p-2 bg-white"
-                        onClick={openFilterModal}
+                        onClick={() => setIsFilterModalOpen(true)}
                     />
                     <button className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md w-32">
                         <Link to="/story" className="flex items-center justify-center">
@@ -135,12 +106,13 @@ const StoryList = () => {
             </div>
             <FetchStory setStories={setStories} />
             <ListTable stories={filteredStories} handleEdit={handleEdit} handleDelete={handleDelete} />
-            <FilterModal
-                isOpen={isFilterModalOpen}
-                onClose={closeFilterModal}
-                onApplyFilters={handleApplyFilters}
-                selectedFilters={selectedFilters}
-            />
+            {isFilterModalOpen && (
+                <FilterModal
+                    isOpen={isFilterModalOpen}
+                    onClose={() => setIsFilterModalOpen(false)}
+                    onApplyFilter={handleApplyFilter}
+                />
+            )}
         </div>
     );
 };

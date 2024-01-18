@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { IoChevronBack } from "react-icons/io5";
+import CancelModal from './CancelModal';
 
 const Chapter = () => {
     const navigate = useNavigate();
-    const { storyId } = useParams(); 
+    const { storyId } = useParams();
     const [newChapter, setNewChapter] = useState({
         chapterTitle: '',
         storyChapter: '',
@@ -34,7 +36,7 @@ const Chapter = () => {
                 throw new Error('Failed to save chapter');
             }
 
-            navigate(`/editstory/${storyId}`); 
+            navigate(`/editstory/${storyId}`);
         } catch (error) {
             console.error('Error saving chapter:', error.message);
         }
@@ -66,22 +68,45 @@ const Chapter = () => {
         'code-block',
     ];
 
+    const [showCancelModal, setShowCancelModal] = useState(false);
+
+    const handleCancelClick = () => {
+        setShowCancelModal(true);
+    };
+
+    const handleCancelConfirmation = () => {
+        setShowCancelModal(false);
+        navigate('/addstory');
+    };
+
+    const handleCancelModalClose = () => {
+        setShowCancelModal(false);
+    };
+
     return (
         <div className="max-w-4xl mx-auto my-8">
-            <button
-                onClick={() => navigate(`/edit-story/${storyId}`)}
-                className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md mb-4"
-            >
-                Back to Edit Story
-            </button>
-
-            <div className="flex space-x-4">
+            <ul className="flex flex-row">
+                <li >
+                    <Link to="/" className="flex flex-wrap items-center py-2 rounded ">
+                        <IoChevronBack className="text-lg mr-5 text-[#6558F5]" />
+                        <div className='text-lg font-medium mr-5 text-[#6558F5] rounded underline'>List Story</div>
+                    </Link>
+                </li>
+                <li >
+                    <Link to="/story" className="flex flex-wrap items-center py-2 rounded ">
+                        <IoChevronBack className="text-lg mr-5 text-[#6558F5]" />
+                        <div className='text-lg font-medium text-[#6558F5] rounded underline'>Add Story</div>
+                    </Link>
+                </li>
+            </ul>
+            <h2 className="text-4xl font-bold mb-4 mt-10">Add Chapter</h2>
+            <div className="max-w-4xl mx-auto my-8 bg-white p-8 rounded-md">
                 <div className="flex-1">
-                    <label className="block font-bold mb-1">Chapter Title </label>
+                    <label className="block font-bold mb-">Title </label>
                     <input
                         type="text"
-                        className="w-full p-2 border rounded-md"
-                        placeholder="Chapter Title"
+                        className="w-full p-2 border rounded-md mb-8"
+                        placeholder="Title"
                         value={newChapter.chapterTitle}
                         onChange={(e) =>
                             setNewChapter({ ...newChapter, chapterTitle: e.target.value })
@@ -89,29 +114,40 @@ const Chapter = () => {
                         required
                     />
                 </div>
+                <div className="mb-12 ">
+                    <label className="block font-bold mb-1 ">Story</label>
+                    <ReactQuill
+                        modules={quillModules}
+                        formats={quillFormats}
+                        value={newChapter.storyChapter}
+                        onChange={(value) =>
+                            setNewChapter({ ...newChapter, storyChapter: value })
+                        }
+                        style={{ height: '400px' }}
+                    />
+                </div>
             </div>
 
-            <div className="mb-5">
-                <label className="block font-bold mb-1">Story Chapter</label>
-                <ReactQuill
-                    modules={quillModules}
-                    formats={quillFormats}
-                    value={newChapter.storyChapter}
-                    onChange={(value) =>
-                        setNewChapter({ ...newChapter, storyChapter: value })
-                    }
-                />
-            </div>
 
-            <div className="flex justify-end mb-10">
+            <div className='flex justify-end gap-8'>
+                <button type="cancel" className="bg-white text-[#6558F5] font-bold py-2 px-4 rounded-md">
+                    <button type="button" onClick={handleCancelClick} className="bg-white text-[#6558F5] font-bold py-2 px-4 rounded-md">
+                        Cancel
+                    </button>
+                </button>
                 <button
                     type="button"
                     onClick={handleSaveChapter}
                     className="bg-[#6558F5] text-white font-bold py-2 px-4 rounded-md"
                 >
-                    Save Chapter
+                    Save
                 </button>
             </div>
+            <CancelModal
+                isOpen={showCancelModal}
+                onCancel={handleCancelModalClose}
+                onConfirm={handleCancelConfirmation}
+            />
         </div>
     );
 };

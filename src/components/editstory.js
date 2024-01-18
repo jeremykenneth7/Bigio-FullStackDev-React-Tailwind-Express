@@ -155,7 +155,7 @@ const EditStory = () => {
             <ul className="flex flex-col">
                 <li >
                     <Link to="/" className="flex flex-wrap items-center py-2 rounded ">
-                        <IoChevronBack className="text-lg mr-3 text-[#6558F5]" />
+                        <IoChevronBack className="text-lg mr-5 text-[#6558F5]" />
                         <div className='text-lg font-medium text-[#6558F5] rounded underline'>List Story</div>
                     </Link>
                 </li>
