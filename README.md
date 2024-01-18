@@ -54,12 +54,22 @@
 
 
 ## <a name="project-structures"></a> Project Structure :
+Frontend
 * `components`
 * `pages`
 * `services` / `api` 
 * `utils`
 
+Backend
+* `controller`
+* `routes`
+* `services` 
+* `index`
+  
 ## <a name="web-link"></a> Website URL :
-<h3>API Documentation Postman : https://documenter.getpostman.com/view/30125940/2s9YsRdUrm </h3>
-<h3>BackEnd Deployment : https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories </h3>
 <h3>FrontEnd Deployment : https://bigio-fullstack.vercel.app/ </h3>
+<h3>BackEnd Deployment : https://us-central1-fullstack-api-38a4f.cloudfunctions.net/api/api/stories </h3>
+<h3>API Documentation Postman : https://documenter.getpostman.com/view/30125940/2s9YsRdUrm </h3>
+<h3>BackEnd Github File : https://github.com/jeremykenneth7/Storyku-API-Bigio </h3>
+
+
